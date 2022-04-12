@@ -67,7 +67,15 @@ fn heapify (a: &mut Vec<i32>, i: usize, l: usize) -> Vec<i32> {
     if left < l && a[left] > a[max] { max = left }
     if right < l && a[right] > a[max] { max = right }
     if max != i {
+        println!("> sort");
+        println!{"current: {:?}", a};
+        if right < l {
+            println!("before: {} - [{}] - {}  (idx: {}, {}, {})", a[left], a[i], a[right], left, i, right);
+        }
         a.swap(max, i);
+        if right < l {
+            println!("after:  {} - [{}] - {}\n", a[left], a[i], a[right]);
+        }
         heapify(a, max, l);
     }
     a.to_vec()
