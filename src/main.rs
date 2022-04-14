@@ -21,8 +21,10 @@ fn main() {
     let rand_vec: Vec<i32> = gen_rand_vec(MIN, MAX, NUM);
     println!("original array: {:?}", rand_vec);
 
-    let heap_sort_arr: Vec<i32> = heap_sort(&rand_vec);
-    println!("sorted array: {:?}", heap_sort_arr);
+    match heap_sort(&rand_vec) {
+        Ok(result) => println!("sorted array: {:?}", result),
+        Err(msg) => println!("failure: {}", msg)
+    }
 }
 
 /**
@@ -45,7 +47,10 @@ fn gen_rand_vec (min: i32, max: i32, num: usize) -> Vec<i32> {
  * # Arguments
  * * `arr` - ベクタ配列
  */
-fn heap_sort (arr: &Vec<i32>) -> Vec<i32> {
+fn heap_sort (arr: &Vec<i32>) -> Result<Vec<i32>, &str> {
+    if arr.iter().any(|e| *e < 0) { return Err("Minimum value is 0!"); }
+    if arr.iter().any(|e| *e > 100) { return Err("Maximum value is 100!"); }
+
     let mut a: Vec<i32> = arr.clone();
     let mut l: usize = a.len();
 
@@ -57,13 +62,14 @@ fn heap_sort (arr: &Vec<i32>) -> Vec<i32> {
         l -= 1;
         heapify(&mut a, 0, l);
     }
-    a
+    Ok(a)
 }
 
 fn heapify (a: &mut Vec<i32>, i: usize, l: usize) -> Vec<i32> {
     let left: usize = 2 * i + 1;
     let right: usize = 2 * i + 2;
     let mut max: usize = i;
+
     if left < l && a[left] > a[max] { max = left }
     if right < l && a[right] > a[max] { max = right }
     if max != i {
