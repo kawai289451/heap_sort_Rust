@@ -107,3 +107,41 @@ fn heapify (a: &mut Vec<i32>, i: usize, l: usize) -> Vec<i32> {
 //     }
 //     return a;
 //   };
+// Examples
+// heapsort([6, 3, 4, 1]); // [1, 3, 4, 6]
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn heap_sorted () {
+        let test_arr = vec![6, 3, 4, 1];
+        let exp_arr = vec![1, 3, 4, 6];
+        match heap_sort(&test_arr) {
+            Ok(result) => assert_eq!(result, exp_arr),
+            Err(_) => assert!(false, "failed!")
+        }
+    }
+
+    #[test]
+    fn smaller_than_0 () {
+        let test_arr = vec![6, 3, 4 , 1, -1];
+        let exp_msg = "Minimum value is 0!";
+        match heap_sort(&test_arr) {
+            Ok(_) => assert!(false, "Should not return Ok!"),
+            Err(msg) => assert_eq!(msg, exp_msg)
+        }
+    }
+
+    #[test]
+    fn bigger_than_100 () {
+        let test_arr = vec![6, 3, 4 , 1, 101];
+        let exp_msg = "Maximum value is 100!";
+        match heap_sort(&test_arr) {
+            Ok(_) => assert!(false, "Should not return Ok!"),
+            Err(msg) => assert_eq!(msg, exp_msg)
+        }
+    }
+}
