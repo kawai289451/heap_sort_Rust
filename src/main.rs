@@ -21,8 +21,8 @@ fn main() {
     let rand_vec: Vec<i32> = gen_rand_vec(MIN, MAX, NUM);
     println!("original array: {:?}", rand_vec);
 
-    match heap_sort(&rand_vec) {
-        Ok(result) => println!("sorted array: {:?}", result),
+    match is_valid_vec(&rand_vec) {
+        Ok(_) => println!("sorted array: {:?}", heap_sort(&rand_vec)),
         Err(msg) => println!("failure: {}", msg)
     }
 }
@@ -42,15 +42,24 @@ fn gen_rand_vec (min: i32, max: i32, num: usize) -> Vec<i32> {
 }
 
 /**
+ * ベクタ配列が有効かをチェックします。
+ * 
+ * #Arguments
+ * * `arr` - ベクタ配列
+ */
+fn is_valid_vec (arr: &Vec<i32>) -> Result<&str, &str> {
+    if arr.iter().any(|e| *e < 0) { return Err("Minimum value is 0!"); }
+    if arr.iter().any(|e| *e > 100) { return Err("Maximum value is 100!"); }
+    return Ok("Vec is valid!")
+}
+
+/**
  * ベクタ配列をヒープソートします。
  * 
  * # Arguments
  * * `arr` - ベクタ配列
  */
-fn heap_sort (arr: &Vec<i32>) -> Result<Vec<i32>, &str> {
-    if arr.iter().any(|e| *e < 0) { return Err("Minimum value is 0!"); }
-    if arr.iter().any(|e| *e > 100) { return Err("Maximum value is 100!"); }
-
+fn heap_sort (arr: &Vec<i32>) -> Vec<i32> {
     let mut a: Vec<i32> = arr.clone();
     let mut l: usize = a.len();
 
@@ -62,7 +71,7 @@ fn heap_sort (arr: &Vec<i32>) -> Result<Vec<i32>, &str> {
         l -= 1;
         heapify(&mut a, 0, l);
     }
-    Ok(a)
+    a
 }
 
 fn heapify (a: &mut Vec<i32>, i: usize, l: usize) -> Vec<i32> {
@@ -118,24 +127,35 @@ fn heapify (a: &mut Vec<i32>, i: usize, l: usize) -> Vec<i32> {
 
 
 #[cfg(test)]
-mod tests {
+mod heap_sort {
     use super::*;
 
     #[test]
     fn heap_sorted () {
-        let test_arr = vec![6, 3, 4, 1];
-        let exp_arr = vec![1, 3, 4, 6];
-        match heap_sort(&test_arr) {
-            Ok(result) => assert_eq!(result, exp_arr),
-            Err(_) => assert!(false, "failed!")
+        let test_vec = vec![6, 3, 4, 1];
+        let exp_vec = vec![1, 3, 4, 6];
+        assert_eq!(heap_sort(&test_vec), exp_vec);
+    }
+}
+#[cfg(test)]
+mod is_valid_vec {
+    use super::*;
+
+    #[test]
+    fn valid () {
+        let test_vec = vec![6, 3, 4 , 1];
+        let exp_msg = "Vec is valid!";
+        match is_valid_vec(&test_vec) {
+            Ok(msg) => assert_eq!(msg, exp_msg),
+            Err(_) => assert!(false, "Should not return Err!")
         }
     }
 
     #[test]
     fn smaller_than_0 () {
-        let test_arr = vec![6, 3, 4 , 1, -1];
+        let test_vec = vec![6, 3, 4 , 1, -1];
         let exp_msg = "Minimum value is 0!";
-        match heap_sort(&test_arr) {
+        match is_valid_vec(&test_vec) {
             Ok(_) => assert!(false, "Should not return Ok!"),
             Err(msg) => assert_eq!(msg, exp_msg)
         }
@@ -143,9 +163,9 @@ mod tests {
 
     #[test]
     fn bigger_than_100 () {
-        let test_arr = vec![6, 3, 4 , 1, 101];
+        let test_vec = vec![6, 3, 4 , 1, 101];
         let exp_msg = "Maximum value is 100!";
-        match heap_sort(&test_arr) {
+        match is_valid_vec(&test_vec) {
             Ok(_) => assert!(false, "Should not return Ok!"),
             Err(msg) => assert_eq!(msg, exp_msg)
         }
